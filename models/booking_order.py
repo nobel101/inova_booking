@@ -54,3 +54,8 @@ class CalenderEventEx(models.Model):
     def _compute_duration(self):
         for event in self.with_context(dont_notify=True):
             event.duration = self._get_duration(event.start, event.stop)
+
+class DeliveryOrderExt(models.Model):
+    _inherit = 'stock.picking'
+
+    is_booking = fields.Boolean()
