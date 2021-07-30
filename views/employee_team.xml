@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="employee_team_form_view" model="ir.ui.view">
+            <field name="name">employee_team.form</field>
+            <field name="model">employee.team</field>
+            <field name="arch" type="xml">
+                <form string="Team">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1>
+                                <field name="name" placeholder="Title"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="team_leader"/>
+                                <field name="employee_ids" widget="many2many_tags"/>
+                            </group>
+                            <group>
+                                <field name="equipments_ids" widget="many2many_tags"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="employee_team_tree_view" model="ir.ui.view">
+            <field name="name">employee_team.tree</field>
+            <field name="model">employee.team</field>
+            <field name="arch" type="xml">
+                <tree string="Teams">
+                    <field name="name"/>
+                    <field name="team_leader"/>
+                    <field name="employee_ids" widget="many2many_tags"/>
+                    <field name="equipments_ids" widget="many2many_tags"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record id="employee_team_act_window" model="ir.actions.act_window">
+            <field name="name">Employee Team</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">employee.team</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem name="Teams" id="employee_team_menu" parent="hr.menu_human_resources_configuration" action="employee_team_act_window"/>
+
+    </data>
+</odoo>

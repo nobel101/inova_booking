@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+            <!--  adding the additional fields if is_booking is true       -->
+        <record id="view_order_form_inherit" model="ir.ui.view">
+            <field name="name">sale.view.order.form.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="book_start" attrs="{'invisible':[('is_booking','!=',True)]}"/>
+                    <field name="book_end" attrs="{'invisible':[('is_booking','!=',True)]}"/>
+                </xpath>
+                <xpath expr="//page[@name='customer_signature']" position="after">
+                    <field name="is_booking" invisible="1"/>
+                    <page name="additional_info" string="Employee and Equipments" attrs="{'invisible':[('is_booking','!=',True)]}">
+                        <group>
+                            <group>
+                                <field name="employee_team_id"/>
+                                <field name="team_leader" readonly='0'/>
+                            </group>
+                            <group>
+                                <field name="employee_ids" widget="many2many_tags" readonly='0'/>
+                                <field name="equipment_ids" widget="many2many_tags" readonly='0'/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+                <xpath expr="//group[@name='sales_person']" position="inside">
+                    <field name="is_booking"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="booking_order_action" model="ir.actions.act_window">
+            <field name="name">Booking Order</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('is_booking','=',True)]</field>
+        </record>
+
+        <menuitem name="Booking Order" id="booking_order_menu"
+                  web_icon="inova_booking,/static/assets/online-booking.png"
+                  action="booking_order_action"/>
+    </data>
+</odoo>
