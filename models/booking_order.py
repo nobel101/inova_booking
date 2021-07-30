@@ -1,4 +1,4 @@
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 
 
 class BookingOrder(models.Model):
@@ -55,7 +55,24 @@ class CalenderEventEx(models.Model):
         for event in self.with_context(dont_notify=True):
             event.duration = self._get_duration(event.start, event.stop)
 
+
 class DeliveryOrderExt(models.Model):
     _inherit = 'stock.picking'
 
     is_booking = fields.Boolean()
+    work_order_seq = fields.Char(string='Work Order Reference', required=True, copy=False, readonly=True, index=True,
+                                      default=lambda self: _('New'))
+
+
+    @api.model
+    def create(self, vals):
+        if self.is_booking == True:
+            if vals.get('work_order_seq', _('New')) == _('New'):
+                seq_date = None
+                vals['work_order_seq'] = self.env['ir.sequence'].next_by_code('stock.picking',
+                                                                                 sequence_date=seq_date) or _('New')
+            result = super(DeliveryOrderExt, self).create(vals)
+            return result
+        else:
+            result = super(DeliveryOrderExt, self).create(vals)
+            return result
