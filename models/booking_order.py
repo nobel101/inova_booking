@@ -1,4 +1,7 @@
+from datetime import timedelta
+
 from odoo import fields, models, api, _
+from odoo.exceptions import ValidationError
 
 
 class BookingOrder(models.Model):
@@ -11,11 +14,24 @@ class BookingOrder(models.Model):
                                    related='employee_team_id.employee_ids')
     equipment_ids = fields.One2many('product.template', 'sale_order_id', related='employee_team_id.equipments_ids')
     book_start = fields.Datetime(default=fields.Datetime.now, string='Start booking Date')
-    book_end = fields.Datetime(string='End booking Date')
+    book_end = fields.Datetime(string='End booking Date',compute='_compute_end_date', inverse='_recompute_end_date')
+    duration = fields.Float(digits=(6,2),help="Duration in Days")
 
     # TODO : method action_check to insure that the team leader is an employee and the equipments has no overlapping with other bookings
     # TODO: override checking method to add other condition
-
+    @api.depends('start_date','duration')
+    def _compute_end_date(self):
+        for rec in self:
+            if not (rec.start_date and rec.duration):
+                rec.end_date = rec.start_date
+                continue
+            duration = timedelta(days=rec.duration, seconds=-1)
+            rec.end_date = rec.start_date + duration
+    def _recompute_end_date(self):
+        for rec in self:
+            if not (rec.start_date and rec.duration):
+                continue
+            rec.duration = (rec.end_date - rec.start_date).days + 1
 
 class EmployeeTeam(models.Model):
     _name = 'employee.team'
@@ -71,6 +87,7 @@ class DeliveryOrderExt(models.Model):
                 seq_date = None
                 vals['work_order_seq'] = self.env['ir.sequence'].next_by_code('stock.picking',
                                                                                  sequence_date=seq_date) or _('New')
+                vals['name'] = '/'
             result = super(DeliveryOrderExt, self).create(vals)
             return result
         else:

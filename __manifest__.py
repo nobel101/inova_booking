@@ -22,6 +22,7 @@
         'views/employee_team.xml',
         'views/equipments.xml',
         'views/booking_order.xml',
+        'views/delivery_order.xml',
         'data/sequence.xml',
 
 

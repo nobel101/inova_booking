@@ -10,6 +10,9 @@
                 <xpath expr="//group[@name='other_infos']" position="inside">
                     <field name="is_booking"/>
                 </xpath>
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('name','=','/')],}</attribute>
+                </xpath>
             </field>
         </record>
     </data>
